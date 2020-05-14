@@ -4,19 +4,22 @@
   "description": "一个基于 github 的 图片上传及 CDN服务",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "dev": "nodemon ."
   },
   "repository": "https://github.com/fengcms/image-cdn-server-by-github",
   "author": "Fungleo",
   "license": "MIT",
   "dependencies": {
     "express": "^4.17.1",
-    "express-formidable": "^1.2.0"
+    "express-formidable": "^1.2.0",
+    "js-yaml": "^3.13.1"
   },
   "devDependencies": {
     "electron": "^8.2.5",
     "electron-reloader": "^1.0.1",
     "eslint": "^6.8.0",
+    "nodemon": "^2.0.4",
     "standard": "^14.3.3"
   }
 }
