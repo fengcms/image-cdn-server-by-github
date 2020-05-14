@@ -6,15 +6,17 @@
   "scripts": {
     "start": "electron ."
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "https://github.com/fengcms/image-cdn-server-by-github",
   "author": "Fungleo",
   "license": "MIT",
-  "devDependencies": {
-    "electron": "^8.2.5",
-    "electron-reloader": "^1.0.1"
-  },
   "dependencies": {
     "express": "^4.17.1",
     "express-formidable": "^1.2.0"
+  },
+  "devDependencies": {
+    "electron": "^8.2.5",
+    "electron-reloader": "^1.0.1",
+    "eslint": "^6.8.0",
+    "standard": "^14.3.3"
   }
 }
