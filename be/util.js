@@ -1,6 +1,8 @@
 const fs = require('fs')
 const path = require('path')
 const { imageSaveDir } = global.config
+const shell = require('child_process').execFile
+
 const calcFileExt = path => {
   let fileBuffer = fs.readFileSync(path)
   // 将上文提到的 文件标识头 按 字节 整理到数组中
@@ -44,5 +46,13 @@ const calcSavePath = (hash, fileExt) => {
   const returnSourcePath = saveSourcePath.replace(imageSaveDir, '/')
   return { saveDir, savePath, saveSourcePath, returnPath, returnSourcePath }
 }
-
-module.exports = { calcFileExt, calcSavePath }
+const gitPush = () => {
+  return new Promise((resolve, reject) => {
+    const shFile = path.resolve(__dirname, 'gitpush.sh')
+    shell(shFile, [], null, (err, out) => {
+      if (err) reject(err)
+      resolve(out)
+    })
+  })
+}
+module.exports = { calcFileExt, calcSavePath, gitPush }

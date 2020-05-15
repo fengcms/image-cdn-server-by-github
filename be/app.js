@@ -5,10 +5,22 @@ const toType = require('to-type')
 const fs = require('fs')
 const Path = require('path')
 const Images = require('images')
-
-const { calcFileExt, calcSavePath } = require('./util')
+const cors = require('koa2-cors')
+const { calcFileExt, calcSavePath, gitPush } = require('./util')
 
 const app = new Koa()
+// 具体参数我们在后面进行解释
+app.use(cors({
+  origin (ctx) {
+    return '*' // 允许来自所有域名请求
+  },
+  exposeHeaders: ['WWW-Authenticate', 'Server-Authorization'],
+  maxAge: 5,
+  credentials: true,
+  allowMethods: ['POST'],
+  allowHeaders: ['Content-Type', 'Authorization', 'Accept']
+}))
+
 app.use(koaBody({
   multipart: true,
   parsedMethods: ['POST'],
@@ -63,13 +75,16 @@ app.use(async ctx => {
       Images(sourceImage).draw(mark, w - 180, h - 60).save(savePath)
       // 保存原图
       fs.renameSync(path, saveSourcePath)
+      await gitPush().catch(() => ctx.throw(500, '推送 gitee 失败'))
       ctx.body = { path: returnPath, sourcePath: returnSourcePath }
     } else {
       fs.renameSync(path, savePath)
+      await gitPush().catch(() => ctx.throw(500, '推送 gitee 失败'))
       ctx.body = { path: returnPath }
     }
   } else {
     fs.renameSync(path, savePath)
+    await gitPush().catch(() => ctx.throw(500, '推送 gitee 失败'))
     ctx.body = { path: returnPath }
   }
 })
