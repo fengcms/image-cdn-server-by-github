@@ -15,8 +15,8 @@ be.listen(
   }
 )
 // 以下为启动GUI
-// const gui = require('./gui')
-// console.log(gui)
-// try {
-//   require('electron-reloader')(module, {})
-// } catch (_) {}
+const gui = require('./gui')
+console.log(gui)
+try {
+  require('electron-reloader')(module, {})
+} catch (_) {}

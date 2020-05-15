@@ -3,17 +3,13 @@
   <head>
     <meta charset="UTF-8">
     <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-    <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-    <title>Hello World!</title>
+    <title>图片上传工具</title>
+    <style>
+      * {padding: 0;margin: 0;}
+    </style>
   </head>
   <body>
-    <h1>Hello World!</h1>
-    We are using Node.js <span id="node-version"></span>,
-    Chromium <span id="chrome-version"></span>,
-    and Electron <span id="electron-version"></span>.
-
-    <!-- You can also require other files to run in this process -->
-    <script src="./renderer.js"></script>
+    <iframe  src="http://localhost:17680/h5/#/" style=" width:800px; height:550px; border: none;"></iframe>
+    <webview></webview>
   </body>
 </html>

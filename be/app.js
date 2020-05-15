@@ -1,6 +1,7 @@
 const Koa = require('koa')
 const koaJson = require('koa-json')
 const koaBody = require('koa-body')
+const staticFiles = require('koa-static')
 const toType = require('to-type')
 const fs = require('fs')
 const Path = require('path')
@@ -20,6 +21,8 @@ app.use(cors({
   allowMethods: ['POST'],
   allowHeaders: ['Content-Type', 'Authorization', 'Accept']
 }))
+
+app.use(staticFiles(Path.resolve(__dirname, './static')))
 
 app.use(koaBody({
   multipart: true,
