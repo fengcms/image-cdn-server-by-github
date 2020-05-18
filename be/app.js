@@ -39,56 +39,63 @@ app.use(koaBody({
 }))
 app.use(koaJson({ pretty: false, param: 'pretty' }))
 
-app.use(async (ctx, next) => {
-  const { files, type } = ctx.request
-  if (type !== 'multipart/form-data' || !files) {
-    ctx.throw(400, '请求类型错误，上传文件接口仅支持 multipart/form-data')
-  }
-  const { file } = files
-  if (!file) {
-    ctx.throw(400, '上传文件不能为空！')
-  }
-  if (toType(file) === 'array') {
-    file.forEach(i => {
-      fs.unlinkSync(i.path)
-    })
-    ctx.throw(400, '只支持单张图片上传')
-  }
-  if (ctx.path !== '/upload') {
-    ctx.throw(404)
-  }
-  await next()
-})
-
 app.use(async ctx => {
-  const { path, hash } = ctx.request.files.file
-  const fileExt = calcFileExt(path)
-  if (!fileExt) return ctx.throw(415)
-  const { saveDir, savePath, saveSourcePath, returnPath, returnSourcePath } = calcSavePath(hash, fileExt)
-  // 检查目录是否存在，不存在则创建
-  if (!fs.existsSync(saveDir)) fs.mkdirSync(saveDir)
-  // 非 jpg 图片直接保存
-  if (fileExt === '.jpg') {
-    const sourceImage = Images(path)
-    const w = sourceImage.width()
-    const h = sourceImage.height()
-    // 只有宽高均大于300，才加水印，否则直接保存
-    if (w > 300 && h > 300) {
-      const mark = Images(Path.resolve(__dirname, './mark.png'))
-      Images(sourceImage).draw(mark, w - 180, h - 60).save(savePath)
-      // 保存原图
-      fs.renameSync(path, saveSourcePath)
-      await gitPush().catch(() => ctx.throw(500, '推送 gitee 失败'))
-      ctx.body = { path: returnPath, sourcePath: returnSourcePath }
+  if (ctx.path === '/upload') {
+    const { files, type } = ctx.request
+    if (type !== 'multipart/form-data' || !files) {
+      ctx.throw(400, '请求类型错误，上传文件接口仅支持 multipart/form-data')
+    }
+    const { file } = files
+    if (!file) {
+      ctx.throw(400, '上传文件不能为空！')
+    }
+    if (toType(file) === 'array') {
+      file.forEach(i => {
+        fs.unlinkSync(i.path)
+      })
+      ctx.throw(400, '只支持单张图片上传')
+    }
+    const { path, hash } = file
+    const fileExt = calcFileExt(path)
+    if (!fileExt) return ctx.throw(415)
+    const { saveDir, savePath, saveSourcePath, returnPath, returnSourcePath } = calcSavePath(hash, fileExt)
+    // 检查目录是否存在，不存在则创建
+    if (!fs.existsSync(saveDir)) fs.mkdirSync(saveDir)
+    // 非 jpg 图片直接保存
+    if (fileExt === '.jpg') {
+      const sourceImage = Images(path)
+      const w = sourceImage.width()
+      const h = sourceImage.height()
+      // 只有宽高均大于300，才加水印，否则直接保存
+      if (w > 300 && h > 300) {
+        const mark = Images(Path.resolve(__dirname, './mark.png'))
+        Images(sourceImage).draw(mark, w - 180, h - 60).save(savePath)
+        // 保存原图
+        fs.renameSync(path, saveSourcePath)
+        // await gitPush().catch(() => ctx.throw(500, '推送 gitee 失败'))
+        ctx.body = { path: returnPath, sourcePath: returnSourcePath }
+      } else {
+        fs.renameSync(path, savePath)
+        // await gitPush().catch(() => ctx.throw(500, '推送 gitee 失败'))
+        ctx.body = { path: returnPath }
+      }
     } else {
       fs.renameSync(path, savePath)
-      await gitPush().catch(() => ctx.throw(500, '推送 gitee 失败'))
+      // await gitPush().catch(() => ctx.throw(500, '推送 gitee 失败'))
       ctx.body = { path: returnPath }
     }
-  } else {
-    fs.renameSync(path, savePath)
-    await gitPush().catch(() => ctx.throw(500, '推送 gitee 失败'))
-    ctx.body = { path: returnPath }
+  }
+  if (ctx.path === '/github-push') {
+    await gitPush('github').catch(() => ctx.throw(500, '推送 github 失败'))
+    ctx.body = { status: 0 }
+  }
+  if (ctx.path === '/gitee-push') {
+    await gitPush('gitee').catch(() => ctx.throw(500, '推送 gitee 失败'))
+    ctx.body = { status: 0 }
+  }
+  if (ctx.path === '/all-push') {
+    await gitPush('all').catch(() => ctx.throw(500, '推送 github 或 gitee 失败'))
+    ctx.body = { status: 0 }
   }
 })
 

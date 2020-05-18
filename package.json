@@ -6,7 +6,7 @@
   "scripts": {
     "start": "electron .",
     "dev": "nodemon .",
-    "build": "electron-packager ./ uploadImage --platform=darwin --out ./dist --app-version 0.0.1"
+    "build": "electron-packager ./ uploadImage --platform=darwin --out ./dist --app-version 0.0.1 --icon=./logo.icns"
   },
   "repository": "https://github.com/fengcms/image-cdn-server-by-github",
   "author": "Fungleo",

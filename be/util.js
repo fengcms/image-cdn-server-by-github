@@ -46,9 +46,14 @@ const calcSavePath = (hash, fileExt) => {
   const returnSourcePath = saveSourcePath.replace(imageSaveDir, '/')
   return { saveDir, savePath, saveSourcePath, returnPath, returnSourcePath }
 }
-const gitPush = () => {
+const gitPush = (type = 'gitee') => {
+  const types = {
+    github: 'githubpush.sh',
+    gitee: 'giteepush.sh',
+    all: 'gitpush.sh'
+  }
   return new Promise((resolve, reject) => {
-    const shFile = path.resolve(__dirname, 'gitpush.sh')
+    const shFile = path.resolve(__dirname, types[type])
     shell(shFile, [], null, (err, out) => {
       if (err) reject(err)
       resolve(out)
